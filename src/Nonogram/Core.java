@@ -22,7 +22,7 @@ public class Core {
 		
 	}
 	public Cell getCell(int cellx, int celly) {
-		Cell cell = map.get(cellx, celly);
+		Cell cell = map.getCell(cellx, celly);
 		return cell;
 	}
 	public void paintCell(Cell cell) {

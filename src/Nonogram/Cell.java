@@ -16,4 +16,14 @@ public class Cell {
 		this.property = property;
 		
 	}
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
+	public int getProperty() {
+		return property;
+	}
+	
 }
