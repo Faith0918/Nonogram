@@ -47,7 +47,6 @@ public class PictureMap {
 
 	private boolean testMap() {
 		int answer_quantity = 0;
-		Cell[][] answer = new Cell[20][20];
 		Cell[][] baseMap = paintInevitables(mapArray);
 		Cell[][] candi = baseMap;
 		LinkedList<Cell[]>[] cases = new LinkedList[20];
@@ -57,13 +56,19 @@ public class PictureMap {
 		int line_num = 0;
 		while(line_num<20) {
 			for( Cell[] lineX : cases[line_num]) {
+				LinkedList<Cell[]>[] backupCases = cases;
+				Cell[][] backup = candi;
 				candi[line_num] = lineX;
- 				if(testAbility(candi)) {
- 					answer[line_num] = lineX;
+				
+				checkConstraints(candi, cases);
+				
+ 				if(testAbility(candi, cases)) {
 					break;
 				}
 				else {
-					cases[line_num].remove(lineX);
+					candi = backup;
+					backupCases[line_num].remove(lineX);
+					cases = backupCases;
 				}
 			}
 			if(cases[line_num].isEmpty()&&line_num >0) {
@@ -79,7 +84,9 @@ public class PictureMap {
 						return false;
 					}
 					else {
-						//TODO 현재 모든 경우의 수 삭제
+						for(int i = 0; i<20; i++) {
+							cases[i].remove(candi[i]);
+						}
 					}
 				}
 				else {
@@ -90,7 +97,17 @@ public class PictureMap {
 		return false;
 	}
 
-	private boolean testAbility(Cell[][] candi) {
+	private void checkConstraints(Cell[][] candi, LinkedList<Cell[]>[] cases) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void reduceFalseCase(LinkedList<Cell[]>[] cases) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private boolean testAbility(Cell[][] candi, LinkedList<Cell[]>[] cases) {
 		// TODO Auto-generated method stub
 		return false;
 	}
