@@ -28,6 +28,7 @@ public class Core {
 	public void paintCell(Cell cell) {
 		map.paintCell(cell);
 		view.paintCellView(cell);
+		//TODO test every single time the user paints
 		
 	}
 	public void XCell(Cell cell) {

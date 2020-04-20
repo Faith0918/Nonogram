@@ -1,7 +1,12 @@
 package Nonogram;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
+import java.util.Stack;
+
+import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 
 public class PictureMap {
 	Cell[][] mapArray;
@@ -10,7 +15,7 @@ public class PictureMap {
 		newArray();
 		assignColorCell();
 		assignNumbers();
-		testMap();
+		testMap1();
 		
 	}
 
@@ -45,7 +50,7 @@ public class PictureMap {
 		
 	}
 
-	private boolean testMap() {
+	private boolean testMap1() {
 		int answer_quantity = 0;
 		Cell[][] baseMap = paintInevitables(mapArray);
 		Cell[][] candi = baseMap;
@@ -96,6 +101,23 @@ public class PictureMap {
 		}
 		return false;
 	}
+	
+//	private void testMap2() {
+//		int answer_quantity = 0;
+//		Cell[][] baseMap = paintInevitables(mapArray);
+//		Cell[][] candi = baseMap;
+//		LinkedList<Cell[]>[] cases = new LinkedList[20];
+//		cases[0] = generateCases(baseMap, 0);
+//		Queue<HashMap<Integer,Cell[]>> q = new LinkedList<HashMap<Integer,Cell[]>>();
+//		HashMap<Integer, Cell[]> m = new HashMap<>();
+//		q.add(new HashMap<Integer,Cell[]>() );
+//		while(!q.isEmpty()) {
+//			Cell[] line = q.poll();
+//			testAbility();
+//			
+//		}
+//		
+//	}
 
 	private void checkConstraints(Cell[][] candi, LinkedList<Cell[]>[] cases) {
 		// TODO Auto-generated method stub
