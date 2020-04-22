@@ -3,7 +3,7 @@ package Nonogram;
 public class Cell {
 	private final int x;
 	private final int y;
-	private final int property;
+	private int property;
 	// 0: non-colored, 1: colored, 2: X
 	public static final int Blank = 0;
 	public static final int Colored = 1;
@@ -25,5 +25,7 @@ public class Cell {
 	public int getProperty() {
 		return property;
 	}
-	
+	public void setProperty(int property) {
+		this.property = property;
+	}
 }

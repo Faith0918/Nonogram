@@ -10,18 +10,20 @@ import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 
 public class PictureMap {
 	Cell[][] mapArray;
-	int[][] numberArray;// numberArray[i][0] : x axis numbers, numberArray[i][1] : y axis numbers
+	LinkedList<Integer>[][] numberArray;// numberArray[i][0] : x axis numbers, numberArray[i][1] : y axis numbers
 	public void newMap() {
 		newArray();
 		assignColorCell();
 		assignNumbers();
-		testMap1();
+		testMap();
 		
 	}
 
 	private void assignNumbers() {
-		numberArray = new int[20][2];
+		numberArray = new LinkedList[20][2];
 		for(int i = 0; i<20; i++) {
+			numberArray[i][0] = new LinkedList<Integer>();
+			numberArray[i][1] = new LinkedList<Integer>();
 			int x = 0;
 			int y = 0;
 			
@@ -29,12 +31,26 @@ public class PictureMap {
 				if(mapArray[i][j].getProperty() == Cell.Colored) {
 					x++;
 				}
+				else {
+					if(x != 0) {
+						numberArray[i][0].add(x);
+						x = 0;
+					}
+					
+				}
 				if(mapArray[j][i].getProperty() == Cell.Colored) {
 					y++;
 				}
+				else {
+					if(y != 0) {
+						numberArray[i][1].add(y);
+						y = 0;
+					}
+				}
+				
+				
 			}
-			numberArray[i][0] = x;
-			numberArray[i][1] = y;
+			
 		}
 		
 	}
@@ -50,40 +66,38 @@ public class PictureMap {
 		
 	}
 
-	private boolean testMap1() {
+
+	
+	private boolean testMap() {
 		int answer_quantity = 0;
-		Cell[][] baseMap = paintInevitables(mapArray);
-		Cell[][] candi = baseMap;
 		LinkedList<Cell[]>[] cases = new LinkedList[20];
-		for(int i = 0; i<20; i++) {
-			cases[i] = generateCases(baseMap, i);
+		for(int i = 0; i<20;i++) {
+			cases[i] = generateCases(numberArray, i);
 		}
-		int line_num = 0;
-		while(line_num<20) {
-			for( Cell[] lineX : cases[line_num]) {
-				LinkedList<Cell[]>[] backupCases = cases;
-				Cell[][] backup = candi;
-				candi[line_num] = lineX;
-				
-				checkConstraints(candi, cases);
-				
- 				if(testAbility(candi, cases)) {
+		Cell[][] baseMap = paintInevitables(cases);
+		Cell[][] candi = baseMap;
+		
+		int line_index = 0;
+		while(line_index<20) {
+			for(Cell[] cells: cases[line_index]) {
+				Line line = new Line(line_index, cells);
+				if(lineAvailable(line)) {
+					candi[line_index] = cells;
+					paintInevitables(cases, candi);
 					break;
 				}
 				else {
-					candi = backup;
-					backupCases[line_num].remove(lineX);
-					cases = backupCases;
+					cases[line_index].remove(cells);
 				}
 			}
-			if(cases[line_num].isEmpty()&&line_num >0) {
-				line_num --;
+			if(cases[line_index].isEmpty() && line_index>0) {
+				line_index--;
 			}
-			else if(cases[line_num].isEmpty()&& line_num == 0) {
+			else if(cases[line_index].isEmpty()&& line_index ==0) {
 				return true;
 			}
 			else {
-				if(line_num == 19) {
+				if(line_index == 19) {
 					answer_quantity++;
 					if(answer_quantity>2) {
 						return false;
@@ -95,59 +109,110 @@ public class PictureMap {
 					}
 				}
 				else {
-					line_num++;
+					line_index++;
 				}
 			}
 		}
-		return false;
+		return false;		
 	}
-	
-//	private void testMap2() {
-//		int answer_quantity = 0;
-//		Cell[][] baseMap = paintInevitables(mapArray);
-//		Cell[][] candi = baseMap;
-//		LinkedList<Cell[]>[] cases = new LinkedList[20];
-//		cases[0] = generateCases(baseMap, 0);
-//		Queue<HashMap<Integer,Cell[]>> q = new LinkedList<HashMap<Integer,Cell[]>>();
-//		HashMap<Integer, Cell[]> m = new HashMap<>();
-//		q.add(new HashMap<Integer,Cell[]>() );
-//		while(!q.isEmpty()) {
-//			Cell[] line = q.poll();
-//			testAbility();
+
+	private boolean lineAvailable(Line line) {
+		for(int i = 0; i<20; i++) {
+			if(mapArray[line.getIndex()][i] != line.getCells()[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private LinkedList<Cell[]> generateCases(LinkedList<Integer>[][] numberArray, Cell[][] baseMap, int i) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public LinkedList<Cell[]> generateCases(LinkedList[][] numberArray, int i){
+//		LinkedList<Cell[]> list = new LinkedList<Cell[]>();
+//		LinkedList<Integer> numbers = new LinkedList<Integer>();
+//		
+//		
+//		for(int idx=0; idx<numberArray[i][0].size(); idx++) {
+//			numbers.add((Integer) numberArray[i][0].get(idx));
+//		}
+//		for(int idx = 0; idx<numbers.size(); idx++) {
+//			for(int c = 0; c<20; c++) {
+//				
+//			}
+//		}
+//		for(int num : numbers) {
 //			
 //		}
-//		
-//	}
-
-	private void checkConstraints(Cell[][] candi, LinkedList<Cell[]>[] cases) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void reduceFalseCase(LinkedList<Cell[]>[] cases) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private boolean testAbility(Cell[][] candi, LinkedList<Cell[]>[] cases) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	private LinkedList<Cell[]> generateCases(Cell[][] baseMap, int i) {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
-
 
 	
 
-	private Cell[][] paintInevitables(Cell[][] mapArray) {
-		// TODO Auto-generated method stub
-		return null;
+	private Cell[][] paintInevitables(LinkedList<Cell[]>[] cases) {
+		Cell[][] returnMap = new Cell[20][20];
+		
+		for(int i = 0; i < 20; i++) {
+			Cell[] paintedCells = new Cell[20];
+			for(int idx = 0; idx<20; idx++) {
+				paintedCells[idx] = new Cell(i, idx, Cell.Blank);
+			}
+			for(int c = 0; c<20; c++) {
+				boolean all_painted = true;
+				boolean never_painted = true;
+				for(int j = 0; j<cases[i].size(); j++) {
+					Cell[] cells = cases[i].get(j);
+					if(cells[c].getProperty() == 0) {
+						all_painted = false;
+					}
+					else if(cells[c].getProperty() == 1) {
+						never_painted = false;
+					}
+				}
+				if(all_painted) {
+					paintedCells[c].setProperty(Cell.Colored);
+				}
+				else if(never_painted) {
+					paintedCells[c].setProperty(Cell.X);
+				}
+				
+			}
+			returnMap[i] = paintedCells;
+		}
+		return returnMap;
 	}
-
+	
+	private Cell[][] paintInevitables(LinkedList<Cell[]>[] cases, Cell[][] baseMap) {
+		Cell[][] returnMap = baseMap;
+		for(int i = 0; i < 20; i++) {
+			Cell[] paintedCells = baseMap[i];
+			for(int c = 0; c<20; c++) {
+				if(paintedCells[c].getProperty() == Cell.Blank) {
+					boolean all_painted = true;
+					boolean never_painted = true;
+					for(int j = 0; j<cases[i].size(); j++) {
+						Cell[] cells = cases[i].get(j);
+						if(cells[c].getProperty() == 0) {
+							all_painted = false;
+						}
+						else if(cells[c].getProperty() == 1) {
+							never_painted = false;
+						}
+					}
+					if(all_painted) {
+						paintedCells[c].setProperty(Cell.Colored);
+					}
+					else if(never_painted) {
+						paintedCells[c].setProperty(Cell.X);
+					}
+				}
+			}
+			returnMap[i] = paintedCells;
+		}
+		return returnMap;
+	}
 	
 
 	private void assignColorCell() {
@@ -176,12 +241,12 @@ public class PictureMap {
 	}
 
 	public void paintCell(Cell cell) {
-		// TODO Auto-generated method stub
+		mapArray[cell.getX()][cell.getY()].setProperty(Cell.Colored);
 		
 	}
 
 	public void XCell(Cell cell) {
-		// TODO Auto-generated method stub
+		mapArray[cell.getX()][cell.getY()].setProperty(Cell.X);
 		
 	}
 

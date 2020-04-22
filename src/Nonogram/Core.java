@@ -16,8 +16,11 @@ public class Core {
 		
 	}
 	private void gameStart() {
-		map.newMap();
+		
+//		map.newMap();
+		System.out.println("new game");
 		view.resetViewModel();
+		System.out.println("reset view model");
 		view.drawMap();
 		
 	}
@@ -27,6 +30,7 @@ public class Core {
 	}
 	public void paintCell(Cell cell) {
 		map.paintCell(cell);
+		System.out.println("?????");
 		view.paintCellView(cell);
 		//TODO test every single time the user paints
 		
