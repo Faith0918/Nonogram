@@ -17,7 +17,7 @@ public class Core {
 	}
 	private void gameStart() {
 		
-//		map.newMap();
+		map.newMap();
 		System.out.println("new game");
 		view.resetViewModel();
 		System.out.println("reset view model");

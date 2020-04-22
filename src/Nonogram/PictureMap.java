@@ -131,19 +131,35 @@ public class PictureMap {
 	}
 
 	public LinkedList<Cell[]> generateCases(LinkedList[][] numberArray, int i){
-//		LinkedList<Cell[]> list = new LinkedList<Cell[]>();
-//		LinkedList<Integer> numbers = new LinkedList<Integer>();
-//		
-//		
-//		for(int idx=0; idx<numberArray[i][0].size(); idx++) {
-//			numbers.add((Integer) numberArray[i][0].get(idx));
-//		}
-//		for(int idx = 0; idx<numbers.size(); idx++) {
+		// TODO dfs로 전부 case 찾기.
+		LinkedList<Cell[]> list = new LinkedList<Cell[]>();
+		LinkedList<int[]> numbers = new LinkedList<int[]>();
+		
+		int c = 0;
+		int index = 0;
+		
+		while(c<20) {
+			if(c+(int)numberArray[i][0].get(index)>20) {
+				
+			}
+			for(int idx = 0; idx<numberArray[i][0].size(); idx++) {
+				int[] pair = new int[2];
+				pair[0] = c;
+				pair[1] = (int) numberArray[i][0].get(idx);
+				numbers.add(pair);
+					
+			}
+		}
+//		for(int idx = 0; idx<numberArray[i][0].size(); idx++) {
 //			for(int c = 0; c<20; c++) {
+//				int[] pair = new int[2];
+//				pair[0] = c;
+//				pair[1] = (int) numberArray[i][0].get(idx);
+//				numbers.add(pair);
 //				
 //			}
 //		}
-//		for(int num : numbers) {
+////		for(int num : numbers) {
 //			
 //		}
 		return null;
