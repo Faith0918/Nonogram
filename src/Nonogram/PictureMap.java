@@ -15,8 +15,17 @@ public class PictureMap {
 		newArray();
 		assignColorCell();
 		assignNumbers();
-		testMap();
-		
+		if(!testMap()) {
+			newMap();
+		}
+		System.out.println("tested");
+	}
+	public Cell[][] getMap(){
+		System.out.println("get map");
+		return mapArray;
+	}
+	public LinkedList<Integer>[][] getNumbers(){
+		return numberArray;
 	}
 
 	private void assignNumbers() {
@@ -30,6 +39,10 @@ public class PictureMap {
 			for(int j = 0; j<20; j++) {
 				if(mapArray[i][j].getProperty() == Cell.Colored) {
 					x++;
+					if(j == 19){
+						numberArray[i][0].add(x);
+						x = 0;
+					}
 				}
 				else {
 					if(x != 0) {
@@ -40,6 +53,10 @@ public class PictureMap {
 				}
 				if(mapArray[j][i].getProperty() == Cell.Colored) {
 					y++;
+					if(j==19) {
+						numberArray[i][1].add(y);
+						y = 0;
+					}
 				}
 				else {
 					if(y != 0) {
@@ -50,7 +67,6 @@ public class PictureMap {
 				
 				
 			}
-			
 		}
 		
 	}
@@ -73,23 +89,33 @@ public class PictureMap {
 		LinkedList<Cell[]>[] cases = new LinkedList[20];
 		for(int i = 0; i<20;i++) {
 			cases[i] = generateCases(numberArray, i);
+			
 		}
 		Cell[][] baseMap = paintInevitables(cases);
 		Cell[][] candi = baseMap;
-		
 		int line_index = 0;
 		while(line_index<20) {
-			for(Cell[] cells: cases[line_index]) {
-				Line line = new Line(line_index, cells);
-				if(lineAvailable(line)) {
-					candi[line_index] = cells;
-					paintInevitables(cases, candi);
-					break;
-				}
-				else {
-					cases[line_index].remove(cells);
+			if(!cases[line_index].isEmpty()) {
+				int i = 0;
+				while(cases[line_index].size()<=i) {
+					Cell[] cells = cases[line_index].get(i);
+					Line line = new Line(line_index, cells);
+					if(lineAvailable(line)) {
+						candi[line_index] = cells;
+						paintInevitables(cases, candi);
+						break;
+					}
+					else {
+						cases[line_index].remove(cells);
+						continue;
+					}
 				}
 			}
+			else {
+				line_index++;
+				continue;
+			}
+			
 			if(cases[line_index].isEmpty() && line_index>0) {
 				line_index--;
 			}
@@ -99,13 +125,22 @@ public class PictureMap {
 			else {
 				if(line_index == 19) {
 					answer_quantity++;
-					if(answer_quantity>2) {
+					if(answer_quantity>=2) {
 						return false;
 					}
 					else {
 						for(int i = 0; i<20; i++) {
-							cases[i].remove(candi[i]);
+							if(!cases[i].isEmpty()) {
+								for(int j= 0; j<cases[i].size(); j++) {
+									if(compareLines(cases[i].get(j), candi[i])) {
+										cases[i].remove(j);	
+										break;
+									}
+								}//cases를 line으로 관리해야함.(지울때 제대로 안지워짐) index로 지워야 확실히 지워질듯
+							}
+							
 						}
+						line_index = 0;
 					}
 				}
 				else {
@@ -113,59 +148,86 @@ public class PictureMap {
 				}
 			}
 		}
-		return false;		
+		
+		return true;		
 	}
 
 	private boolean lineAvailable(Line line) {
+		System.out.println("line : "+line.getCells()[0].getX()+" "+line.getCells()[0].getY()+line.getCells()[0].getProperty());
 		for(int i = 0; i<20; i++) {
-			if(mapArray[line.getIndex()][i] != line.getCells()[i]) {
+			if(mapArray[line.getIndex()][i].getProperty() != line.getCells()[i].getProperty()) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private LinkedList<Cell[]> generateCases(LinkedList<Integer>[][] numberArray, Cell[][] baseMap, int i) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	public LinkedList<Cell[]> generateCases(LinkedList[][] numberArray, int i){
 		// TODO dfs로 전부 case 찾기.
-		LinkedList<Cell[]> list = new LinkedList<Cell[]>();
+		LinkedList<Cell[]> cases = new LinkedList<Cell[]>();
 		LinkedList<int[]> numbers = new LinkedList<int[]>();
 		
-		int c = 0;
-		int index = 0;
-		
-		while(c<20) {
-			if(c+(int)numberArray[i][0].get(index)>20) {
-				
-			}
-			for(int idx = 0; idx<numberArray[i][0].size(); idx++) {
-				int[] pair = new int[2];
-				pair[0] = c;
-				pair[1] = (int) numberArray[i][0].get(idx);
-				numbers.add(pair);
-					
-			}
+		if(numberArray[i][0].size() == 0) {
+			return cases;
 		}
-//		for(int idx = 0; idx<numberArray[i][0].size(); idx++) {
-//			for(int c = 0; c<20; c++) {
-//				int[] pair = new int[2];
-//				pair[0] = c;
-//				pair[1] = (int) numberArray[i][0].get(idx);
-//				numbers.add(pair);
-//				
-//			}
-//		}
-////		for(int num : numbers) {
-//			
-//		}
-		return null;
+		int count = 0;
+		int index = 0;
+		Cell[] line = new Cell[20];
+		for(int idx = 0; idx<20; idx++) {
+			line[idx] = new Cell(i, idx, Cell.Blank);
+			
+		}
+		dfs(numberArray[i][0], cases, line, index, count);
+		return cases;
 	}
 
-	
+	boolean compareLines(Cell[] line1, Cell[] line2) {
+		boolean same = true;
+		for(int i = 0; i<20; i++) {
+			
+			if(line1[i].getProperty() + line2[i].getProperty() %2 == 1) {
+				same = false;
+				break;
+			}
+		}
+		if(same) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	private void dfs(LinkedList numbers, LinkedList<Cell[]> cases, Cell[] line, int index, int count) {
+		if(index==numbers.size()) {
+			for(int i = 0; i< cases.size(); i++) {
+				
+				if(compareLines(cases.get(i), line)) {
+					return;
+				}
+			}
+			cases.add(line);
+			return;
+		}
+		for(int j = 1; j<20; j++) {
+			int n = (int)numbers.get(index);
+			if(count + n <20) {
+				for(int i = count; i<count+n; i++) {
+					line[i].setProperty(Cell.Colored);
+				}
+				count += n + j;
+				index++;
+				dfs(numbers, cases, line, index, count);
+				count -= (n+j);
+				index--;
+				for(int i = count; i<count+n; i++) {
+					line[i].setProperty(Cell.Blank);
+				}
+			}			
+		}
+	}
 
 	private Cell[][] paintInevitables(LinkedList<Cell[]>[] cases) {
 		Cell[][] returnMap = new Cell[20][20];
@@ -234,7 +296,7 @@ public class PictureMap {
 	private void assignColorCell() {
 		int num = 0;
 		Random random= new Random();
-		while(num<30) {
+		while(num<300) {
 			int x = random.nextInt(20);
 			int y = random.nextInt(20);
 			if(mapArray[x][y] != null){
@@ -265,5 +327,14 @@ public class PictureMap {
 		mapArray[cell.getX()][cell.getY()].setProperty(Cell.X);
 		
 	}
+	public boolean checkAnswer(Cell[][] viewModel) {
+		boolean isCorrect = true;
+		for(int i = 0; i<=20; i++) {
+			if(!compareLines(mapArray[i], viewModel[i])) {isCorrect=false; break;}
+		}
+		return isCorrect;
+		
+	}
+
 
 }

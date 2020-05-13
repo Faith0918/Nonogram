@@ -14,7 +14,12 @@ public class NonogramUserListener implements MouseListener, ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		if(e.getActionCommand().equals("restart")){
+			 core.gameStart();
+		 }
+		if(e.getActionCommand().equals("finish")) {
+			core.checkAnswer();
+		}
 		
 	}
 
@@ -45,6 +50,7 @@ public class NonogramUserListener implements MouseListener, ActionListener{
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		Point p = e.getPoint();
+		System.out.println(p);
 		Cell cell = convertPointToCell(p.x, p.y);
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			core.paintCell(cell);
@@ -56,8 +62,8 @@ public class NonogramUserListener implements MouseListener, ActionListener{
 	}
 	private Cell convertPointToCell(int x, int y) {
 		int cellx = 0,celly = 0;
-		cellx = (int)(x/20);
-		celly = (int)(y/20);
+		cellx = (int)((x-200)/20);
+		celly = (int)((y-200)/20);
 		Cell c = core.getCell(cellx,celly);
 		return c;
 	}
