@@ -22,9 +22,10 @@ public class View extends JFrame {
 	DrawComponent cmp;
 	NumberComponent x_numberComponent;
 	NumberComponent y_numberComponent;
+	int initial_size = 20;
 	
 	public View(Core core) {
-		core = this.core;
+		this.core = core;
 		setTitle("Nonogram");
 		this.setSize(625,750);
 		this.setLayout(new BorderLayout());
@@ -35,8 +36,7 @@ public class View extends JFrame {
 		buttonPanel.add(resetButton);
 		buttonPanel.add(finishButton);
 		cmp = new DrawComponent();
-		
-		resetViewModel();
+		resetViewModel(core.getSize());
 		mapPanel.add(cmp);
 		x_numberComponent = new NumberComponent();
 		y_numberComponent = new NumberComponent();
@@ -47,20 +47,24 @@ public class View extends JFrame {
 		setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-	public void resetViewModel() {
-		Cell[][] viewModel = new Cell[20][20];
-		for(int r = 0; r < 20 ; r++) {
-			for(int c = 0; c < 20; c++) {
+	public void resetViewModel(int size) {
+		Cell[][] viewModel = new Cell[size][size];
+		System.out.println("???");
+		for(int r = 0; r < size ; r++) {
+			for(int c = 0; c < size; c++) {
 				viewModel[r][c] = new Cell(r, c, Cell.Blank);
 			}
 		}
-		LinkedList<Integer>[][] numbers = new LinkedList[20][2];
-		for(int i = 0; i<20; i++) {
+		System.out.println("000");
+		LinkedList<Integer>[][] numbers = new LinkedList[size][2];
+		for(int i = 0; i<size; i++) {
 			for(int j = 0; j<2; j++) {
 				numbers[i][j] = new LinkedList<Integer>();
 			}
 		}
+		System.out.println("111");
  		cmp.setViewModel(viewModel);
+ 		System.out.println("222");
 		cmp.setNumbers(numbers);
 		
 	}
@@ -70,38 +74,30 @@ public class View extends JFrame {
 		
 	}
 
-
-	public void paintCellView(Cell cell) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void XCellView(Cell cell) {
-		// TODO Auto-generated method stub
-		
-	}
 	public void setNumbers(LinkedList[][] numberArray) {
 		cmp.setNumbers(numberArray);
-		
 	}
 	public void changeViewModel(Cell cell) {
 		Cell[][] map = cmp.getViewModel();
 		map[cell.getX()][cell.getY()].setProperty(cell.getProperty());
 		cmp.setViewModel(map);
-		
 	}
 	public void addListener(NonogramUserListener listener) {
 		resetButton.addActionListener(listener);
 		finishButton.addActionListener(listener);
 		cmp.addMouseListener(listener);
 	}
-	public Object getViewModel() {
+	public Cell[][] getViewModel() {
 		// TODO Auto-generated method stub
 		return cmp.getViewModel();
 	}
 	public void popup(String string) {
 		JOptionPane.showMessageDialog(finishButton, string);
 		
+	}
+	public Cell getCell(int cellx, int celly) {
+		Cell[][] viewModel = getViewModel();
+		return viewModel[cellx][celly];
 	}
 	
 

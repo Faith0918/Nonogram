@@ -6,6 +6,8 @@ public class Core {
 	View view;
 	PictureMap map;
 	NonogramUserListener listener;
+	int size = 15;
+	
 	public Core() {
 		view = new View(this);
 		map = new PictureMap();
@@ -16,14 +18,21 @@ public class Core {
 	public static void main(String[] args) {
 		Core core = new Core();
 	}
+	
+	public int getSize() {
+		System.out.println("!!!");
+		return this.size;
+	}
+	
 	private void start() {
 		gameStart();
 		
 	}
 	public void gameStart() {
-		map.newMap();
+		
+		map.newMap(size);
 		System.out.println("new game");
-		view.resetViewModel();
+		view.resetViewModel(size);
 		view.setNumbers(map.getNumbers());
 		System.out.println("reset view model");
 		view.drawMap();
@@ -31,7 +40,7 @@ public class Core {
 	}
 	
 	public Cell getCell(int cellx, int celly) {
-		Cell cell = map.getCell(cellx, celly);
+		Cell cell = view.getCell(cellx, celly);
 		return cell;
 	}
 	public void paintCell(Cell cell) {
@@ -58,7 +67,7 @@ public class Core {
 		
 	}
 	public void checkAnswer() {
-		if(map.checkAnswer((Cell[][]) view.getViewModel())) {
+		if(map.checkAnswer(view.getViewModel())) {
 			view.popup("correct!");
 		}
 		else {
@@ -66,4 +75,5 @@ public class Core {
 		}
 		
 	}
+	
 }

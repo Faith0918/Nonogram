@@ -9,14 +9,15 @@ import java.util.Stack;
 import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 
 public class PictureMap {
+	int size;
 	Cell[][] mapArray;
 	LinkedList<Integer>[][] numberArray;// numberArray[i][0] : x axis numbers, numberArray[i][1] : y axis numbers
-	public void newMap() {
-		newArray();
+	public void newMap(int size) {
+		newArray(size);
 		assignColorCell();
 		assignNumbers();
 		if(!testMap()) {
-			newMap();
+			newMap(size);
 		}
 		System.out.println("tested");
 	}
@@ -29,17 +30,17 @@ public class PictureMap {
 	}
 
 	private void assignNumbers() {
-		numberArray = new LinkedList[20][2];
-		for(int i = 0; i<20; i++) {
+		numberArray = new LinkedList[size][2];
+		for(int i = 0; i<size; i++) {
 			numberArray[i][0] = new LinkedList<Integer>();
 			numberArray[i][1] = new LinkedList<Integer>();
 			int x = 0;
 			int y = 0;
 			
-			for(int j = 0; j<20; j++) {
+			for(int j = 0; j<size; j++) {
 				if(mapArray[i][j].getProperty() == Cell.Colored) {
 					x++;
-					if(j == 19){
+					if(j == size-1){
 						numberArray[i][0].add(x);
 						x = 0;
 					}
@@ -53,7 +54,7 @@ public class PictureMap {
 				}
 				if(mapArray[j][i].getProperty() == Cell.Colored) {
 					y++;
-					if(j==19) {
+					if(j==size-1) {
 						numberArray[i][1].add(y);
 						y = 0;
 					}
@@ -72,8 +73,8 @@ public class PictureMap {
 	}
 
 	private void assginBlankCell() {
-		for(int i =0; i<20; i++) {
-			for(int j=0; j<20; j++) {
+		for(int i =0; i<size; i++) {
+			for(int j=0; j<size; j++) {
 				if(mapArray[i][j] == null) {
 					mapArray[i][j] = new Cell(i, j, Cell.Blank);
 				}
@@ -86,15 +87,15 @@ public class PictureMap {
 	
 	private boolean testMap() {
 		int answer_quantity = 0;
-		LinkedList<Cell[]>[] cases = new LinkedList[20];
-		for(int i = 0; i<20;i++) {
+		LinkedList<Cell[]>[] cases = new LinkedList[size];
+		for(int i = 0; i<size;i++) {
 			cases[i] = generateCases(numberArray, i);
 			
 		}
 		Cell[][] baseMap = paintInevitables(cases);
 		Cell[][] candi = baseMap;
 		int line_index = 0;
-		while(line_index<20) {
+		while(line_index<size) {
 			if(!cases[line_index].isEmpty()) {
 				int i = 0;
 				while(cases[line_index].size()<=i) {
@@ -123,13 +124,13 @@ public class PictureMap {
 				return true;
 			}
 			else {
-				if(line_index == 19) {
+				if(line_index == size-1) {
 					answer_quantity++;
 					if(answer_quantity>=2) {
 						return false;
 					}
 					else {
-						for(int i = 0; i<20; i++) {
+						for(int i = 0; i<size; i++) {
 							if(!cases[i].isEmpty()) {
 								for(int j= 0; j<cases[i].size(); j++) {
 									if(compareLines(cases[i].get(j), candi[i])) {
@@ -154,7 +155,7 @@ public class PictureMap {
 
 	private boolean lineAvailable(Line line) {
 		System.out.println("line : "+line.getCells()[0].getX()+" "+line.getCells()[0].getY()+line.getCells()[0].getProperty());
-		for(int i = 0; i<20; i++) {
+		for(int i = 0; i<size; i++) {
 			if(mapArray[line.getIndex()][i].getProperty() != line.getCells()[i].getProperty()) {
 				return false;
 			}
@@ -174,8 +175,8 @@ public class PictureMap {
 		}
 		int count = 0;
 		int index = 0;
-		Cell[] line = new Cell[20];
-		for(int idx = 0; idx<20; idx++) {
+		Cell[] line = new Cell[size];
+		for(int idx = 0; idx<size; idx++) {
 			line[idx] = new Cell(i, idx, Cell.Blank);
 			
 		}
@@ -185,11 +186,11 @@ public class PictureMap {
 
 	boolean compareLines(Cell[] line1, Cell[] line2) {
 		boolean same = true;
-		for(int i = 0; i<20; i++) {
+		for(int i = 0; i<size; i++) {
 			
 			if(line1[i].getProperty() + line2[i].getProperty() %2 == 1) {
 				same = false;
-				break;
+				return false;
 			}
 		}
 		if(same) {
@@ -211,9 +212,9 @@ public class PictureMap {
 			cases.add(line);
 			return;
 		}
-		for(int j = 1; j<20; j++) {
+		for(int j = 1; j<size; j++) {
 			int n = (int)numbers.get(index);
-			if(count + n <20) {
+			if(count + n <size) {
 				for(int i = count; i<count+n; i++) {
 					line[i].setProperty(Cell.Colored);
 				}
@@ -230,14 +231,14 @@ public class PictureMap {
 	}
 
 	private Cell[][] paintInevitables(LinkedList<Cell[]>[] cases) {
-		Cell[][] returnMap = new Cell[20][20];
+		Cell[][] returnMap = new Cell[size][size];
 		
-		for(int i = 0; i < 20; i++) {
-			Cell[] paintedCells = new Cell[20];
-			for(int idx = 0; idx<20; idx++) {
+		for(int i = 0; i < size; i++) {
+			Cell[] paintedCells = new Cell[size];
+			for(int idx = 0; idx<size; idx++) {
 				paintedCells[idx] = new Cell(i, idx, Cell.Blank);
 			}
-			for(int c = 0; c<20; c++) {
+			for(int c = 0; c<size; c++) {
 				boolean all_painted = true;
 				boolean never_painted = true;
 				for(int j = 0; j<cases[i].size(); j++) {
@@ -264,9 +265,9 @@ public class PictureMap {
 	
 	private Cell[][] paintInevitables(LinkedList<Cell[]>[] cases, Cell[][] baseMap) {
 		Cell[][] returnMap = baseMap;
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < size; i++) {
 			Cell[] paintedCells = baseMap[i];
-			for(int c = 0; c<20; c++) {
+			for(int c = 0; c<size; c++) {
 				if(paintedCells[c].getProperty() == Cell.Blank) {
 					boolean all_painted = true;
 					boolean never_painted = true;
@@ -296,9 +297,9 @@ public class PictureMap {
 	private void assignColorCell() {
 		int num = 0;
 		Random random= new Random();
-		while(num<300) {
-			int x = random.nextInt(20);
-			int y = random.nextInt(20);
+		while(num<200) {
+			int x = random.nextInt(size);
+			int y = random.nextInt(size);
 			if(mapArray[x][y] != null){
 				continue;
 			}
@@ -310,8 +311,9 @@ public class PictureMap {
 		assginBlankCell();
 	}
 
-	private void newArray() {
-		mapArray = new Cell[20][20];
+	private void newArray(int size) {
+		mapArray = new Cell[size][size];
+		this.size = size;
 	}
 
 	public Cell getCell(int cellx, int celly) {
@@ -329,8 +331,8 @@ public class PictureMap {
 	}
 	public boolean checkAnswer(Cell[][] viewModel) {
 		boolean isCorrect = true;
-		for(int i = 0; i<=20; i++) {
-			if(!compareLines(mapArray[i], viewModel[i])) {isCorrect=false; break;}
+		for(int i = 0; i<size; i++) {
+			if(!compareLines(mapArray[i], viewModel[i])) return false;
 		}
 		return isCorrect;
 		

@@ -12,9 +12,13 @@ import javax.swing.JComponent;
 public class DrawComponent extends JComponent{
 	Cell[][] cellView;
 	LinkedList<Integer>[][] numbers;
-	
+	int size;
+	public void setSize(int size) {
+		this.size = size;
+	}
 	public void setViewModel(Cell[][] cellView) {
 		this.cellView = cellView;
+		this.size = cellView.length;
 	}
 	
 	public Cell[][] getViewModel() {
@@ -24,10 +28,10 @@ public class DrawComponent extends JComponent{
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		int R = 200;
-		int C = 200;
+		int R = 20*size/2;
+		int C = 20*size/2;
 		
-		for(int x = 0; x < 20; x++) {
+		for(int x = 0; x < size; x++) {
 			if(!numbers[x][0].isEmpty()) {
 				for(int i = 0; i<numbers[x][0].size(); i++) {
 					g.setColor(Color.gray);
@@ -49,8 +53,8 @@ public class DrawComponent extends JComponent{
 				}
 			}
 		}
-		for(int r = 0;r < 20; r++) {
-			for(int c = 0; c < 20; c++) {
+		for(int r = 0;r < size; r++) {
+			for(int c = 0; c < size; c++) {
 				if(cellView[r][c].getProperty() == Cell.Blank) {
 					g.setColor(Color.black);
 					g.drawRect(R+r*20, C+c*20, 20, 20);
